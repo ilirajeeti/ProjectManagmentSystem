@@ -96,19 +96,22 @@ namespace ProjectManagmentSystem
 
         private void button6_Click(object sender, EventArgs e)
         {
-            AddEmployee insertEmployee = new AddEmployee();
-            insertEmployee.Show();
+            if (roleName == "admin")
+            {
+                AddEmployee insertEmployee = new AddEmployee();
+                insertEmployee.Show();
+            }
         }
 
         private void button7_Click(object sender, EventArgs e)
         {
             
-            if (bunifuDataGridView1.SelectedRows.Count > 0)
+            if (bunifuDataGridView1.SelectedRows.Count > 0 && roleName == "admin")
             {
                 
                 int id = (int)bunifuDataGridView1.SelectedRows[0].Cells["id"].Value;
 
-                conn.Open();
+
                 string query2 = $"DELETE FROM user WHERE EmployeeId = {id}";
                 MySqlCommand cmd2 = new MySqlCommand(query2, conn);
                 string query = $"DELETE FROM employee WHERE Id = {id}";               
@@ -132,6 +135,63 @@ namespace ProjectManagmentSystem
                 
                 bunifuDataGridView1.Rows.RemoveAt(bunifuDataGridView1.SelectedRows[0].Index);
                 
+            }
+        }
+
+        private void AdminForm_Employee_Load(object sender, EventArgs e)
+        {
+            conn.Open();
+            MySqlCommand employeeId = new MySqlCommand("SELECT Id,FirstName,LastName FROM employee", conn);
+            MySqlDataReader readerEmployeeId = employeeId.ExecuteReader();
+
+            while (readerEmployeeId.Read())
+            {
+                string id = readerEmployeeId.GetString("Id");
+                string name = readerEmployeeId.GetString("FirstName");
+                string lastname = readerEmployeeId.GetString("LastName");
+                comboBox2.Items.Add(id + " " + name + " " + lastname); ;
+            }
+            readerEmployeeId.Close();
+
+            comboBox2.SelectedIndexChanged += comboBox2_SelectedIndexChanged;
+
+
+            MySqlCommand personalNumber = new MySqlCommand("SELECT PersonalNumber FROM employee", conn);
+            MySqlDataReader readerPersonalNumber = personalNumber.ExecuteReader();
+
+            while (readerPersonalNumber.Read())
+            {
+                string personalNumberId = readerPersonalNumber.GetString("PersonalNumber");
+                comboBox1.Items.Add(personalNumberId); ;
+            }
+            readerPersonalNumber.Close();
+
+            comboBox1.SelectedIndexChanged += comboBox1_SelectedIndexChanged;
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string selectedPersonalNumber = comboBox1.SelectedItem?.ToString();
+            if (!string.IsNullOrEmpty(selectedPersonalNumber))
+            {
+                string personalNumberId = selectedPersonalNumber.Split(' ')[0];
+
+                // Filter the DataGridView based on the selected employee ID
+                DataView dataView = ((DataTable)bunifuDataGridView1.DataSource).DefaultView;
+                dataView.RowFilter = $"PersonalNumber = '{personalNumberId}'";
+            }
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string selectedEmployee = comboBox2.SelectedItem?.ToString();
+            if (!string.IsNullOrEmpty(selectedEmployee))
+            {
+                string employeeId = selectedEmployee.Split(' ')[0];
+
+                // Filter the DataGridView based on the selected employee ID
+                DataView dataView = ((DataTable)bunifuDataGridView1.DataSource).DefaultView;
+                dataView.RowFilter = $"Id = '{employeeId}'";
             }
         }
     }

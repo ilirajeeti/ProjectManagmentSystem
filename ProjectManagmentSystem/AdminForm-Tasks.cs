@@ -25,7 +25,7 @@ namespace ProjectManagmentSystem
         private string lastName;
         private string roleName;
 
-        public AdminForm_Tasks(string firstName,string lastName, string roleName)
+        public AdminForm_Tasks(string firstName, string lastName, string roleName)
         {
             server = "localhost";
             database = "projectmanagmentsystem";
@@ -41,7 +41,7 @@ namespace ProjectManagmentSystem
             this.lastName = lastName;
             this.roleName = roleName;
 
-            label1.Text = firstName + " "+ lastName;
+            label1.Text = firstName + " " + lastName;
             label2.Text = roleName;
 
             upDate();
@@ -87,7 +87,7 @@ namespace ProjectManagmentSystem
         public void upDate()
         {
             conn.Open();
-            string query = "select * from projects";
+            string query = "select * from tasks";
             MySqlCommand cmd = new MySqlCommand(query, conn);
             var reader = cmd.ExecuteReader();
             DataTable table = new DataTable();
@@ -95,6 +95,53 @@ namespace ProjectManagmentSystem
             //bunifuDataGridView1.DataSource = table;
             bunifuDataGridView1.DataSource = table;
             conn.Close();
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            if (roleName == "admin")
+            {
+                AddTasks insertTasks = new AddTasks();
+                insertTasks.Show();
+            }
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            conn.Open();
+            if (bunifuDataGridView1.SelectedRows.Count > 0 && roleName == "admin")
+            {
+
+                int id = (int)bunifuDataGridView1.SelectedRows[0].Cells["id"].Value;
+
+
+
+                string query = $"DELETE FROM tasks WHERE Id = {id}";
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+
+                try
+                {
+
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+
+                    MessageBox.Show("Tasku u fshi me sukses");
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+                conn.Close();
+
+
+                bunifuDataGridView1.Rows.RemoveAt(bunifuDataGridView1.SelectedRows[0].Index);
+            }
         }
     }
 }

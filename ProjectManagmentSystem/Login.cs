@@ -91,13 +91,13 @@ namespace ProjectManagmentSystem
             password = textBox2.Text;
             try
             {
-                String query = "SELECT user.*, employee.FirstName, employee.LastName,role.roleName FROM user JOIN role ON user.RoleId = role.Id JOIN employee ON user.EmployeeId = employee.Id WHERE user.Email = '" + textBox1.Text + "' AND user.Password = '" + textBox2.Text + "' AND role.RoleName = 'admin' LIMIT 1";
+                String query = "SELECT user.*, employee.FirstName, employee.LastName,role.roleName FROM user JOIN role ON user.RoleId = role.Id JOIN employee ON user.EmployeeId = employee.Id WHERE user.Email = '" + textBox1.Text + "' AND user.Password = '" + textBox2.Text + "' AND role.RoleName = 'admin' OR role.RoleName ='employee' LIMIT 1";
                 MySqlDataAdapter sqlData = new MySqlDataAdapter(query, conn);
                 DataTable dtable = new DataTable();
                 sqlData.Fill(dtable);
                 if (dtable.Rows.Count > 0)
                 {
-                    // Get the first name and last name of the authenticated user
+                    
                     string firstName = dtable.Rows[0]["FirstName"].ToString();
                     string lastName = dtable.Rows[0]["LastName"].ToString();
                     string roleName = dtable.Rows[0]["RoleName"].ToString();
@@ -105,7 +105,7 @@ namespace ProjectManagmentSystem
                     email = textBox1.Text;
                     password = textBox2.Text;
 
-                    // Pass the first name and last name as parameters when initializing the AdminForm_Projects form
+                 
                     AdminForm_Projects admin = new AdminForm_Projects(firstName, lastName,roleName); 
                     admin.Show();
                     this.Hide();
